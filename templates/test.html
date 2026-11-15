@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Typing test — KeySprint{% endblock %}
+{% block content %}
+<section class="page-heading test-heading"><div><p class="eyebrow">ONE MINUTE FOR YOU</p><h1>Find your <span>rhythm.</span></h1><p class="muted">Type the passage below as accurately as you can.</p></div><div class="timer-box"><small>TIME LEFT</small><strong id="timer">60</strong><span>SECONDS</span></div></section>
+<section class="test-panel">
+  <div class="passage-label"><span>YOUR PASSAGE</span><span>60 SECOND CHALLENGE</span></div>
+  <p class="passage" id="passage">{{ passage }}</p>
+  <form method="POST" action="{{ url_for('save_test') }}" id="test-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="passage" value="{{ passage }}">
+    <input type="hidden" name="duration" id="duration" value="60">
+    <label class="sr-only" for="typed_text">Type the passage here</label>
+    <textarea id="typed_text" name="typed_text" placeholder="Start typing here..." rows="6" maxlength="5000" required></textarea>
+    <div class="test-controls"><span id="live-count">0 words typed</span><button class="button" type="submit" id="finish-button">Finish & save result <span>↗</span></button></div>
+  </form>
+</section>
+<p class="test-tip">TIP: Accuracy first. Speed follows with practice.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/test.js') }}"></script>{% endblock %}

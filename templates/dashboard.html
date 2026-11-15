@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Your dashboard — KeySprint{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">YOUR PROGRESS, IN FOCUS</p><h1>Welcome back, <span>{{ logged_in_user.name if logged_in_user else 'typist' }}.</span></h1><p class="muted">Every session is a step forward.</p></div>
+  <a class="button" href="{{ url_for('typing_test') }}">New typing test <span>↗</span></a>
+</section>
+<section class="stats-grid">
+  <article class="stat-card"><span>TESTS COMPLETED</span><strong>{{ total }}</strong><small>Saved sessions</small></article>
+  <article class="stat-card"><span>AVERAGE SPEED</span><strong>{{ average_wpm }} <em>WPM</em></strong><small>Across your latest 100 tests</small></article>
+  <article class="stat-card"><span>PERSONAL BEST</span><strong>{{ best_wpm }} <em>WPM</em></strong><small>Your fastest saved result</small></article>
+  <article class="stat-card"><span>AVERAGE ACCURACY</span><strong>{{ average_accuracy }}<em>%</em></strong><small>Correct words / typed words</small></article>
+</section>
+<section class="section-heading"><div><p class="eyebrow">YOUR PRACTICE LOG</p><h2>Recent sessions</h2></div><span class="muted small-text">Newest first</span></section>
+{% if tests %}
+  <div class="history-list">
+    {% for test in tests %}
+      <article class="history-card">
+        <div class="history-date"><strong>{{ test.created_at[:10] if test.created_at else 'Saved test' }}</strong><small>{{ test.duration_seconds }} sec</small></div>
+        <div class="history-score"><strong>{{ test.wpm }} <small>WPM</small></strong><span>{{ test.accuracy }}% accuracy</span></div>
+        <div class="history-note">
+          <form method="POST" action="{{ url_for('edit_test', test_id=test.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="notes" maxlength="250" value="{{ test.notes or '' }}" placeholder="Add a note about this session">
+            <button class="mini-button" type="submit">Save note</button>
+          </form>
+        </div>
+        <form method="POST" action="{{ url_for('delete_test', test_id=test.id) }}" onsubmit="return confirm('Delete this test record?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="delete-button" type="submit" aria-label="Delete test">×</button>
+        </form>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state"><div class="empty-icon">⌁</div><h3>Your story starts with one test.</h3><p>Complete a typing session and your results will appear here.</p><a class="button" href="{{ url_for('typing_test') }}">Take your first test</a></div>
+{% endif %}
+{% endblock %}
